@@ -1,0 +1,43 @@
+/* CSS Variables */
+:root {
+    --primary-red: #E50914;
+    --dark-bg: #221F1F;
+    --off-white: #F5F5F1;
+    --gray: #B3B3B3;
+    --success-green: #46D369;
+    --warning-orange: #FFA500;
+    
+    --font-primary: 'Poppins', sans-serif;
+    --font-secondary: 'Roboto', sans-serif;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-secondary);
+    background-color: var(--dark-bg);
+    color: var(--off-white);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Typography */
+h1, h2, h3 {
+    font-family: var(--font-primary);
+    font-weight: 700;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
