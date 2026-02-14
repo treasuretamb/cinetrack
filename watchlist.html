@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Watchlist - CineTrack</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">🎬 CineTrack</h1>
+                <nav class="nav-desktop">
+                    <a href="index.html">Home</a>
+                    <a href="watchlist.html" class="active">Watchlist</a>
+                    <a href="favorites.html">Favorites</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div style="margin-bottom: 30px;">
+                <h1 style="font-size: 36px; margin-bottom: 10px;">📋 My Watchlist</h1>
+                <p style="color: var(--gray); font-size: 18px;">Movies and TV shows you want to watch</p>
+            </div>
+
+            <div id="watchlistGrid" class="content-grid">
+                <!-- Watchlist items will be loaded here -->
+            </div>
+
+            <div id="emptyWatchlist" class="empty-state" style="display: none;">
+                <div style="font-size: 80px; margin-bottom: 20px;">📋</div>
+                <h2 style="font-size: 28px; margin-bottom: 15px;">Your watchlist is empty</h2>
+                <p style="color: var(--gray); font-size: 18px; margin-bottom: 25px;">
+                    Start adding movies and TV shows you want to watch!
+                </p>
+                <button onclick="window.location.href='index.html'" class="btn-primary" style="padding: 12px 30px;">
+                    Browse Content
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <nav class="mobile-nav">
+        <a href="index.html" class="nav-item">
+            <span>🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="watchlist.html" class="nav-item active">
+            <span>📋</span>
+            <span>Watchlist</span>
+        </a>
+        <a href="favorites.html" class="nav-item">
+            <span>⭐</span>
+            <span>Favorites</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { getWatchlist, removeFromWatchlist } from './js/storage.js';
+        import { getImageUrl } from './js/api.js';
+        import { showNotification } from './js/ui.js';
+
+        function loadWatchlist() {
+            const watchlist = getWatchlist();
+            const grid = document.getElementById('watchlistGrid');
+            const emptyState = document.getElementById('emptyWatchlist');
+
+            if (watchlist.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            grid.innerHTML = watchlist.map(item => {
+                const posterUrl = getImageUrl(item.poster_path);
+                const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
+
+                return `
+                    <div class="content-card" data-id="${item.id}" data-media-type="${item.media_type}">
+                        <div class="card-image">
+                            <img src="${posterUrl}" alt="${item.title}" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">${item.title}</h3>
+                            <div class="card-rating">
+                                <span class="star">⭐</span>
+                                <span>${rating}</span>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-icon active" onclick="removeItem(${item.id}, '${item.media_type}')" title="Remove from Watchlist">
+                                    ❌
+                                </button>
+                                <button class="btn-primary btn-small" onclick="viewDetails(${item.id}, '${item.media_type}')">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.removeItem = function(id, mediaType) {
+            removeFromWatchlist(id, mediaType);
+            showNotification('Removed from watchlist', 'success');
+            loadWatchlist();
+        };
+
+        window.viewDetails = function(id, mediaType) {
+            window.location.href = `details.html?id=${id}&type=${mediaType}`;
+        };
+
+        // Load watchlist on page load
+        document.addEventListener('DOMContentLoaded', loadWatchlist);
+    </script>
+</body>
+</html>

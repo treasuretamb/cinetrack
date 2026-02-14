@@ -1,6 +1,6 @@
 // IMPORTANT: Replace 'YOUR_API_KEY_HERE' with your actual TMDB API key
 export const CONFIG = {
-    API_KEY: 'YOUR_API_KEY_HERE',
+    API_KEY: '61a0c8fedf57dfecdabc3cfc9817ab04',
     BASE_URL: 'https://api.themoviedb.org/3',
     IMAGE_BASE_URL: 'https://image.tmdb.org/t/p',
     POSTER_SIZE: 'w500',
