@@ -1,4 +1,4 @@
-// main.js - Main application initialization and event handling
+// main.js - Enhanced main application with Week 6 features
 import { fetchTrending, searchContent, fetchGenres, discoverByGenre } from './api.js';
 import { addToWatchlist, removeFromWatchlist, addToFavorites, removeFromFavorites, addToWatched, isInWatchlist, isInFavorites } from './storage.js';
 import { renderCards, showLoading, hideLoading, showNotification, hideEmptyState, showEmptyState } from './ui.js';
@@ -7,11 +7,15 @@ import { GENRES } from './config.js';
 // State management
 let currentContentType = 'all';
 let currentGenre = null;
+let currentSearchQuery = '';
+let currentPage = 1;
+let totalPages = 1;
 let searchTimeout = null;
+let currentResults = [];
 
 // Initialize the app
 async function init() {
-    console.log('Initializing CineTrack...');
+    console.log('🎬 Initializing CineTrack...');
     
     // Load genres
     await loadGenres();
@@ -22,7 +26,7 @@ async function init() {
     // Set up event listeners
     setupEventListeners();
     
-    console.log('CineTrack initialized successfully!');
+    console.log('✅ CineTrack initialized successfully!');
 }
 
 // Load genres from API
@@ -37,6 +41,7 @@ async function loadGenres() {
         renderGenreFilters();
     } catch (error) {
         console.error('Error loading genres:', error);
+        showNotification('Failed to load genres', 'error');
     }
 }
 
@@ -48,7 +53,7 @@ function renderGenreFilters() {
     container.innerHTML = '';
     
     // Add "All" chip
-    const allChip = createGenreChip({ id: null, name: 'All' }, true);
+    const allChip = createGenreChip({ id: null, name: '🌟 All' }, true);
     container.appendChild(allChip);
     
     // Get appropriate genres based on content type
@@ -58,7 +63,7 @@ function renderGenreFilters() {
     } else if (currentContentType === 'tv') {
         genres = GENRES.tv;
     } else {
-        // For 'all', combine both (remove duplicates)
+        // For 'all', combine both (remove duplicates by name)
         const combined = [...GENRES.movie, ...GENRES.tv];
         const uniqueMap = new Map();
         combined.forEach(g => uniqueMap.set(g.name, g));
@@ -81,6 +86,7 @@ function createGenreChip(genre, isActive = false) {
     chip.className = `genre-chip ${isActive ? 'active' : ''}`;
     chip.textContent = genre.name;
     chip.dataset.genreId = genre.id;
+    chip.setAttribute('aria-pressed', isActive);
     
     chip.addEventListener('click', () => handleGenreClick(genre.id, chip));
     
@@ -90,14 +96,24 @@ function createGenreChip(genre, isActive = false) {
 // Handle genre chip click
 async function handleGenreClick(genreId, chipElement) {
     // Update active state
-    document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.genre-chip').forEach(c => {
+        c.classList.remove('active');
+        c.setAttribute('aria-pressed', 'false');
+    });
     chipElement.classList.add('active');
+    chipElement.setAttribute('aria-pressed', 'true');
     
     currentGenre = genreId;
+    currentPage = 1;
     
     // Clear search input
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = '';
+    currentSearchQuery = '';
+    updateClearButton();
+    
+    // Update content title
+    updateContentTitle(genreId ? chipElement.textContent : null);
     
     // Load content
     if (genreId === null) {
@@ -107,22 +123,52 @@ async function handleGenreClick(genreId, chipElement) {
     }
 }
 
+// Update content title
+function updateContentTitle(genreName = null) {
+    const titleElement = document.getElementById('contentTitle');
+    if (!titleElement) return;
+    
+    if (currentSearchQuery) {
+        titleElement.textContent = `🔍 Search results for "${currentSearchQuery}"`;
+    } else if (genreName) {
+        titleElement.textContent = `${genreName}`;
+    } else {
+        const typeEmoji = currentContentType === 'movie' ? '🎬' : currentContentType === 'tv' ? '📺' : '🔥';
+        const typeText = currentContentType === 'movie' ? 'Trending Movies' : currentContentType === 'tv' ? 'Trending TV Shows' : 'Trending Now';
+        titleElement.textContent = `${typeEmoji} ${typeText}`;
+    }
+}
+
+// Update result count
+function updateResultCount(count) {
+    const countElement = document.getElementById('resultCount');
+    if (countElement) {
+        countElement.textContent = count > 0 ? `${count} results` : '';
+    }
+}
+
 // Load trending content
 async function loadTrendingContent() {
     showLoading();
     hideEmptyState();
+    hideLoadMore();
     
     try {
         const mediaType = currentContentType === 'all' ? 'all' : currentContentType;
         const results = await fetchTrending(mediaType);
         
+        currentResults = results;
         const container = document.getElementById('contentGrid');
         if (container) {
             renderCards(results, container);
+            updateResultCount(results.length);
         }
+        
+        updateContentTitle();
     } catch (error) {
         console.error('Error loading trending content:', error);
         showNotification('Failed to load content. Please try again.', 'error');
+        showEmptyState();
     } finally {
         hideLoading();
     }
@@ -132,22 +178,27 @@ async function loadTrendingContent() {
 async function loadContentByGenre(genreId) {
     showLoading();
     hideEmptyState();
+    hideLoadMore();
     
     try {
         const mediaType = currentContentType === 'all' ? 'movie' : currentContentType;
         const results = await discoverByGenre(genreId, mediaType);
         
+        currentResults = results;
         const container = document.getElementById('contentGrid');
         if (container) {
             if (results.length === 0) {
                 showEmptyState();
+                updateResultCount(0);
             } else {
                 renderCards(results, container);
+                updateResultCount(results.length);
             }
         }
     } catch (error) {
         console.error('Error loading content by genre:', error);
         showNotification('Failed to load content. Please try again.', 'error');
+        showEmptyState();
     } finally {
         hideLoading();
     }
@@ -155,29 +206,39 @@ async function loadContentByGenre(genreId) {
 
 // Handle search
 async function handleSearch(query) {
-    if (!query.trim()) {
+    currentSearchQuery = query.trim();
+    
+    if (!currentSearchQuery) {
+        currentPage = 1;
         await loadTrendingContent();
         return;
     }
     
     showLoading();
     hideEmptyState();
+    hideLoadMore();
     
     try {
         const mediaType = currentContentType === 'all' ? 'multi' : currentContentType;
-        const results = await searchContent(query, mediaType);
+        const results = await searchContent(currentSearchQuery, mediaType);
         
+        currentResults = results;
         const container = document.getElementById('contentGrid');
         if (container) {
             if (results.length === 0) {
                 showEmptyState();
+                updateResultCount(0);
             } else {
                 renderCards(results, container);
+                updateResultCount(results.length);
             }
         }
+        
+        updateContentTitle();
     } catch (error) {
         console.error('Error searching:', error);
         showNotification('Search failed. Please try again.', 'error');
+        showEmptyState();
     } finally {
         hideLoading();
     }
@@ -186,6 +247,9 @@ async function handleSearch(query) {
 // Debounced search handler
 function handleSearchInput(event) {
     const query = event.target.value;
+    
+    // Update clear button visibility
+    updateClearButton();
     
     // Clear existing timeout
     if (searchTimeout) {
@@ -198,10 +262,36 @@ function handleSearchInput(event) {
     }, 300);
 }
 
+// Update clear search button visibility
+function updateClearButton() {
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearch');
+    
+    if (searchInput && clearBtn) {
+        if (searchInput.value) {
+            clearBtn.style.display = 'block';
+        } else {
+            clearBtn.style.display = 'none';
+        }
+    }
+}
+
+// Clear search
+function clearSearch() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.value = '';
+        updateClearButton();
+        currentSearchQuery = '';
+        loadTrendingContent();
+    }
+}
+
 // Handle content type filter
 async function handleContentTypeFilter(type) {
     currentContentType = type;
     currentGenre = null;
+    currentPage = 1;
     
     // Update active button
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -216,7 +306,11 @@ async function handleContentTypeFilter(type) {
     
     // Clear search
     const searchInput = document.getElementById('searchInput');
-    if (searchInput) searchInput.value = '';
+    if (searchInput) {
+        searchInput.value = '';
+        updateClearButton();
+    }
+    currentSearchQuery = '';
     
     // Load trending content for the selected type
     await loadTrendingContent();
@@ -226,6 +320,9 @@ async function handleContentTypeFilter(type) {
 function handleCardAction(event) {
     const button = event.target.closest('[data-action]');
     if (!button) return;
+    
+    event.preventDefault();
+    event.stopPropagation();
     
     const action = button.dataset.action;
     const card = button.closest('.content-card');
@@ -243,16 +340,16 @@ function handleCardAction(event) {
         id: id,
         media_type: mediaType,
         title: titleElement ? titleElement.textContent : 'Unknown',
-        poster_path: posterImg ? posterImg.src.split('/').pop() : null,
+        poster_path: posterImg ? posterImg.getAttribute('data-poster') : null,
         vote_average: ratingElement ? parseFloat(ratingElement.textContent) : 0
     };
     
     switch (action) {
         case 'watchlist':
-            handleWatchlistToggle(item, button);
+            handleWatchlistToggle(item, button, card);
             break;
         case 'favorite':
-            handleFavoriteToggle(item, button);
+            handleFavoriteToggle(item, button, card);
             break;
         case 'details':
             navigateToDetails(id, mediaType);
@@ -261,34 +358,38 @@ function handleCardAction(event) {
 }
 
 // Toggle watchlist
-function handleWatchlistToggle(item, button) {
+function handleWatchlistToggle(item, button, card) {
     const inWatchlist = isInWatchlist(item.id, item.media_type);
     
     if (inWatchlist) {
         removeFromWatchlist(item.id, item.media_type);
         button.classList.remove('active');
+        button.setAttribute('title', 'Add to Watchlist');
         showNotification('Removed from watchlist', 'success');
     } else {
         addToWatchlist(item);
         button.classList.add('active');
-        showNotification('Added to watchlist!', 'success');
+        button.setAttribute('title', 'Remove from Watchlist');
+        showNotification('Added to watchlist! 📋', 'success');
     }
 }
 
 // Toggle favorites
-function handleFavoriteToggle(item, button) {
+function handleFavoriteToggle(item, button, card) {
     const inFavorites = isInFavorites(item.id, item.media_type);
     
     if (inFavorites) {
         removeFromFavorites(item.id, item.media_type);
         button.classList.remove('active');
         button.textContent = '🤍';
+        button.setAttribute('title', 'Add to Favorites');
         showNotification('Removed from favorites', 'success');
     } else {
         addToFavorites(item);
         button.classList.add('active');
         button.textContent = '❤️';
-        showNotification('Added to favorites!', 'success');
+        button.setAttribute('title', 'Remove from Favorites');
+        showNotification('Added to favorites! ❤️', 'success');
     }
 }
 
@@ -297,12 +398,34 @@ function navigateToDetails(id, mediaType) {
     window.location.href = `details.html?id=${id}&type=${mediaType}`;
 }
 
+// Hide load more button
+function hideLoadMore() {
+    const container = document.getElementById('loadMoreContainer');
+    if (container) {
+        container.style.display = 'none';
+    }
+}
+
 // Set up all event listeners
 function setupEventListeners() {
     // Search input
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', handleSearchInput);
+        
+        // Enter key on search
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (searchTimeout) clearTimeout(searchTimeout);
+                handleSearch(searchInput.value);
+            }
+        });
+    }
+    
+    // Clear search button
+    const clearBtn = document.getElementById('clearSearch');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearSearch);
     }
     
     // Search button
@@ -310,16 +433,8 @@ function setupEventListeners() {
     if (searchBtn) {
         searchBtn.addEventListener('click', () => {
             const query = searchInput ? searchInput.value : '';
+            if (searchTimeout) clearTimeout(searchTimeout);
             handleSearch(query);
-        });
-    }
-    
-    // Enter key on search
-    if (searchInput) {
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSearch(searchInput.value);
-            }
         });
     }
     

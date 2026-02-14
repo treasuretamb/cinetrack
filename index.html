@@ -3,84 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CineTrack - Discover and track your favorite movies and TV shows">
     <title>CineTrack - Discover Movies & TV Shows</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 class="logo">🎬 CineTrack</h1>
+                <h1 class="logo">
+                    <a href="index.html" style="color: inherit; text-decoration: none;">
+                        🎬 CineTrack
+                    </a>
+                </h1>
                 <nav class="nav-desktop">
-                    <a href="index.html">Home</a>
-                    <a href="watchlist.html">Watchlist</a>
-                    <a href="favorites.html">Favorites</a>
+                    <a href="index.html" class="nav-link active">Home</a>
+                    <a href="watchlist.html" class="nav-link">Watchlist</a>
+                    <a href="favorites.html" class="nav-link">Favorites</a>
                 </nav>
             </div>
             
+            <!-- Search Bar -->
             <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Search movies & TV shows..." class="search-input">
-                <button id="searchBtn" class="btn-search">Search</button>
+                <div class="search-wrapper">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search movies & TV shows..." 
+                        class="search-input"
+                        aria-label="Search movies and TV shows"
+                    >
+                    <button id="clearSearch" class="btn-clear" style="display: none;" aria-label="Clear search">
+                        ✕
+                    </button>
+                </div>
+                <button id="searchBtn" class="btn-search">
+                    🔍 Search
+                </button>
             </div>
             
+            <!-- Content Type Filters -->
             <div class="filter-container">
-                <button class="filter-btn active" data-type="all">All</button>
-                <button class="filter-btn" data-type="movie">Movies</button>
-                <button class="filter-btn" data-type="tv">TV Shows</button>
+                <button class="filter-btn active" data-type="all">
+                    🎭 All
+                </button>
+                <button class="filter-btn" data-type="movie">
+                    🎬 Movies
+                </button>
+                <button class="filter-btn" data-type="tv">
+                    📺 TV Shows
+                </button>
             </div>
         </div>
     </header>
 
-    <main class="main-content">
-        <section class="genre-section">
-            <div class="container">
-                <div id="genreFilters" class="genre-filters">
-                    <!-- Genres will be loaded here -->
-                </div>
+    <!-- Genre Section -->
+    <section class="genre-section">
+        <div class="container">
+            <div class="genre-header">
+                <h2 class="genre-title">Browse by Genre</h2>
             </div>
-        </section>
+            <div id="genreFilters" class="genre-filters">
+                <div class="genre-chip skeleton">Loading...</div>
+                <div class="genre-chip skeleton">Loading...</div>
+                <div class="genre-chip skeleton">Loading...</div>
+            </div>
+        </div>
+    </section>
 
-        <section class="content-section">
-            <div class="container">
-                <div id="loadingSpinner" class="loading" style="display: none;">
-                    <div class="spinner"></div>
-                    <p>Loading amazing content...</p>
-                </div>
-                
-                <div id="contentGrid" class="content-grid">
-                    <!-- Movie/TV cards will be loaded here -->
-                </div>
-                
-                <div id="emptyState" class="empty-state" style="display: none;">
-                    <p>No results found. Try a different search or filter.</p>
-                </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Current View Title -->
+            <div class="content-header">
+                <h2 id="contentTitle" class="content-title">🔥 Trending Now</h2>
+                <div id="resultCount" class="result-count"></div>
             </div>
-        </section>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading amazing content...</p>
+            </div>
+            
+            <!-- Content Grid -->
+            <div id="contentGrid" class="content-grid">
+                <!-- Movie/TV cards will be loaded here dynamically -->
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">🔍</div>
+                <h3>No results found</h3>
+                <p>Try adjusting your search or filters</p>
+                <button onclick="window.location.reload()" class="btn-primary">
+                    Reset Filters
+                </button>
+            </div>
+
+            <!-- Load More Button -->
+            <div id="loadMoreContainer" class="load-more-container" style="display: none;">
+                <button id="loadMoreBtn" class="btn-load-more">
+                    Load More
+                </button>
+            </div>
+        </div>
     </main>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>🎬 CineTrack</h3>
+                    <p>Your personal movie and TV show discovery platform</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="watchlist.html">Watchlist</a></li>
+                        <li><a href="favorites.html">Favorites</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>About</h4>
+                    <p class="footer-text">
+                        Data provided by 
+                        <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">
+                            TMDB
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 CineTrack. Created for WDD 231 Final Project.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Navigation -->
     <nav class="mobile-nav">
         <a href="index.html" class="nav-item active">
-            <span>🏠</span>
-            <span>Home</span>
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
         </a>
         <a href="watchlist.html" class="nav-item">
-            <span>📋</span>
-            <span>Watchlist</span>
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Watchlist</span>
         </a>
         <a href="favorites.html" class="nav-item">
-            <span>⭐</span>
-            <span>Favorites</span>
+            <span class="nav-icon">⭐</span>
+            <span class="nav-label">Favorites</span>
         </a>
     </nav>
 
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" class="scroll-top-btn" style="display: none;" aria-label="Scroll to top">
+        ↑
+    </button>
+
+    <!-- Scripts -->
     <script type="module" src="js/config.js"></script>
     <script type="module" src="js/api.js"></script>
     <script type="module" src="js/storage.js"></script>
     <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/utils.js"></script>
     <script type="module" src="js/main.js"></script>
+
+    <!-- Inline Script for Scroll to Top -->
+    <script>
+        // Scroll to top button
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.style.display = 'block';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
+        });
+        
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
 </body>
 </html>

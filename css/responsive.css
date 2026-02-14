@@ -1,22 +1,118 @@
 /* ========================================
-   CineTrack - responsive.css
-   Mobile and tablet responsive styles
+   CineTrack - responsive.css (Enhanced Week 6)
+   Comprehensive mobile and tablet responsive styles
    ======================================== */
 
-/* Tablet (768px - 1024px) */
-@media (max-width: 1024px) {
+/* ========================================
+   Large Desktop (> 1600px)
+   ======================================== */
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1600px;
+    }
+    
     .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 35px;
+    }
+    
+    .content-title {
+        font-size: 40px;
+    }
+}
+
+/* ========================================
+   Desktop (1200px - 1600px)
+   ======================================== */
+@media (min-width: 1200px) and (max-width: 1599px) {
+    .content-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 30px;
+    }
+}
+
+/* ========================================
+   Tablet Landscape (1024px - 1199px)
+   ======================================== */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    .content-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 25px;
+    }
+    
+    .content-title {
+        font-size: 28px;
+    }
+    
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========================================
+   Tablet (768px - 1023px)
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .header {
+        padding: 15px 0;
+    }
+    
+    .logo {
+        font-size: 24px;
     }
     
     .nav-desktop {
         gap: 20px;
     }
+    
+    .nav-link {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+    
+    .search-container {
+        flex-direction: row;
+    }
+    
+    .filter-btn {
+        padding: 8px 20px;
+        font-size: 14px;
+    }
+    
+    .genre-section {
+        padding: 20px 0;
+    }
+    
+    .content-title {
+        font-size: 26px;
+    }
+    
+    .content-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+    }
+    
+    .card-title {
+        font-size: 15px;
+    }
+    
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .scroll-top-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
 }
 
-/* Mobile (< 768px) */
-@media (max-width: 768px) {
+/* ========================================
+   Mobile Large (576px - 767px)
+   ======================================== */
+@media (min-width: 576px) and (max-width: 767px) {
     /* Hide desktop navigation */
     .nav-desktop {
         display: none;
@@ -27,65 +123,54 @@
         display: flex;
     }
     
-    /* Add bottom padding to account for mobile nav */
+    /* Adjust main content for mobile nav */
     .main-content {
         padding-bottom: 100px;
     }
     
-    /* Header adjustments */
+    /* Header */
     .header {
         padding: 15px 0;
     }
     
     .logo {
-        font-size: 24px;
+        font-size: 22px;
     }
     
     /* Search */
     .search-container {
         flex-direction: column;
+        margin-bottom: 15px;
+    }
+    
+    .search-input {
+        padding: 10px 35px 10px 15px;
+        font-size: 15px;
     }
     
     .btn-search {
         width: 100%;
+        padding: 10px;
     }
     
-    /* Filter buttons */
+    /* Filters */
     .filter-container {
         gap: 8px;
     }
     
     .filter-btn {
         padding: 8px 16px;
-        font-size: 14px;
-    }
-    
-    /* Content grid - 2 columns on mobile */
-    .content-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-    }
-    
-    /* Cards */
-    .card-title {
-        font-size: 14px;
-    }
-    
-    .card-rating {
         font-size: 13px;
-    }
-    
-    .card-actions {
-        flex-wrap: wrap;
-    }
-    
-    .btn-icon {
-        font-size: 18px;
+        flex: 1;
     }
     
     /* Genre section */
     .genre-section {
-        padding: 20px 0;
+        padding: 15px 0;
+    }
+    
+    .genre-title {
+        font-size: 18px;
     }
     
     .genre-chip {
@@ -93,26 +178,32 @@
         padding: 6px 16px;
     }
     
-    /* Container padding */
-    .container {
-        padding: 0 15px;
-    }
-}
-
-/* Small mobile (< 480px) */
-@media (max-width: 480px) {
-    .logo {
-        font-size: 20px;
+    /* Content */
+    .content-header {
+        margin-bottom: 20px;
     }
     
-    .filter-btn {
-        padding: 6px 12px;
-        font-size: 13px;
+    .content-title {
+        font-size: 24px;
     }
     
+    .result-count {
+        font-size: 14px;
+    }
+    
+    .content-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    
+    /* Cards */
     .card-title {
+        font-size: 14px;
+        min-height: 42px;
+    }
+    
+    .card-rating {
         font-size: 13px;
-        -webkit-line-clamp: 1;
     }
     
     .card-content {
@@ -123,35 +214,409 @@
         font-size: 12px;
         padding: 5px 10px;
     }
+    
+    /* Footer */
+    .footer {
+        padding: 30px 0 80px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .footer-section {
+        text-align: center;
+    }
+    
+    .footer-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    /* Scroll to top */
+    .scroll-top-btn {
+        bottom: 80px;
+        right: 15px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    /* Notifications */
+    .notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
 }
 
-/* Landscape mobile */
-@media (max-width: 768px) and (orientation: landscape) {
+/* ========================================
+   Mobile (< 576px)
+   ======================================== */
+@media (max-width: 575px) {
+    /* Hide desktop navigation */
+    .nav-desktop {
+        display: none;
+    }
+    
+    /* Show mobile navigation */
+    .mobile-nav {
+        display: flex;
+    }
+    
+    /* Adjust main content for mobile nav */
+    .main-content {
+        padding-bottom: 100px;
+    }
+    
+    /* Header */
+    .header {
+        padding: 12px 0;
+    }
+    
+    .logo {
+        font-size: 20px;
+    }
+    
+    .header-content {
+        margin-bottom: 15px;
+    }
+    
+    /* Search */
+    .search-container {
+        flex-direction: column;
+        margin-bottom: 15px;
+        gap: 8px;
+    }
+    
+    .search-input {
+        padding: 10px 35px 10px 15px;
+        font-size: 15px;
+    }
+    
+    .btn-search {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    /* Filters */
+    .filter-container {
+        gap: 6px;
+    }
+    
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+        flex: 1;
+    }
+    
+    /* Genre section */
+    .genre-section {
+        padding: 15px 0;
+    }
+    
+    .genre-title {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .genre-chip {
+        font-size: 12px;
+        padding: 6px 14px;
+    }
+    
+    /* Content */
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+    
+    .content-title {
+        font-size: 22px;
+    }
+    
+    .result-count {
+        font-size: 13px;
+    }
+    
+    /* Content Grid - 2 columns on mobile */
+    .content-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 15px 0;
+    }
+    
+    /* Cards */
+    .card-title {
+        font-size: 13px;
+        -webkit-line-clamp: 2;
+        min-height: 38px;
+    }
+    
+    .card-rating {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .star {
+        font-size: 16px;
+    }
+    
+    .card-content {
+        padding: 10px;
+    }
+    
+    .card-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .btn-icon {
+        font-size: 18px;
+    }
+    
+    .btn-primary.btn-small {
+        font-size: 11px;
+        padding: 4px 8px;
+        width: 100%;
+    }
+    
+    /* Loading */
+    .loading {
+        padding: 40px 15px;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .loading p {
+        font-size: 14px;
+    }
+    
+    /* Empty state */
+    .empty-state {
+        padding: 60px 15px;
+    }
+    
+    .empty-icon {
+        font-size: 60px;
+    }
+    
+    .empty-state h3 {
+        font-size: 22px;
+    }
+    
+    .empty-state p {
+        font-size: 15px;
+    }
+    
+    /* Footer */
+    .footer {
+        padding: 25px 0 80px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .footer-section {
+        text-align: center;
+    }
+    
+    .footer-section h3 {
+        font-size: 18px;
+    }
+    
+    .footer-section h4 {
+        font-size: 15px;
+    }
+    
+    .footer-section p {
+        font-size: 14px;
+    }
+    
+    .footer-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .footer-bottom p {
+        font-size: 12px;
+    }
+    
+    /* Mobile nav */
+    .mobile-nav {
+        padding: 8px 0;
+    }
+    
+    .nav-icon {
+        font-size: 22px;
+    }
+    
+    .nav-label {
+        font-size: 11px;
+    }
+    
+    /* Scroll to top */
+    .scroll-top-btn {
+        bottom: 75px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    /* Notifications */
+    .notification {
+        top: 80px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+/* ========================================
+   Extra Small Mobile (< 375px)
+   ======================================== */
+@media (max-width: 374px) {
+    .logo {
+        font-size: 18px;
+    }
+    
+    .content-title {
+        font-size: 20px;
+    }
+    
+    .filter-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    
+    .genre-chip {
+        font-size: 11px;
+        padding: 5px 12px;
+    }
+    
+    .card-title {
+        font-size: 12px;
+    }
+    
+    .btn-primary.btn-small {
+        font-size: 10px;
+    }
+}
+
+/* ========================================
+   Landscape Mode Adjustments
+   ======================================== */
+@media (max-width: 767px) and (orientation: landscape) {
     .content-grid {
         grid-template-columns: repeat(4, 1fr);
     }
-}
-
-/* Large desktop (> 1400px) */
-@media (min-width: 1400px) {
-    .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 35px;
+    
+    .mobile-nav {
+        padding: 6px 0;
+    }
+    
+    .nav-icon {
+        font-size: 20px;
+    }
+    
+    .nav-label {
+        font-size: 10px;
     }
 }
 
-/* Print styles (if needed) */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+    .content-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
 @media print {
     .header,
     .mobile-nav,
     .search-container,
     .filter-container,
     .genre-section,
-    .card-actions {
-        display: none;
+    .card-actions,
+    .scroll-top-btn,
+    .notification,
+    .footer {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+        color: black;
     }
     
     .content-card {
         break-inside: avoid;
+        page-break-inside: avoid;
+        background: white;
+        border: 1px solid #ddd;
     }
+    
+    .content-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    
+    .card-title,
+    .card-rating {
+        color: black;
+    }
+}
+
+/* ========================================
+   Reduced Motion Support
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ========================================
+   High Contrast Mode
+   ======================================== */
+@media (prefers-contrast: high) {
+    .content-card {
+        border: 2px solid var(--off-white);
+    }
+    
+    .filter-btn,
+    .genre-chip {
+        border-width: 3px;
+    }
+    
+    .btn-primary {
+        border: 2px solid white;
+    }
+}
+
+/* ========================================
+   Dark Mode Override (if needed)
+   ======================================== */
+@media (prefers-color-scheme: light) {
+    /* CineTrack is dark by default, but you can add light mode here if desired */
 }
